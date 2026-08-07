@@ -1,0 +1,65 @@
+{
+  "schemaVersion": 1,
+  "id": "peteonrails.weather",
+  "name": "Tempest Weather",
+  "version": "1.1.0",
+  "author": "Pete Jackson",
+  "license": "MIT",
+  "description": "WeatherFlow Tempest bar pill with a current-conditions hero and 5-day forecast popup. Reads a personal Tempest station via the better_forecast API. Requires your own station ID and API token.",
+  "homepage": "https://github.com/peteonrails/omarchy-tempest-weather",
+  "repository": "https://github.com/peteonrails/omarchy-tempest-weather",
+  "keywords": [
+    "weather",
+    "tempest",
+    "weatherflow",
+    "forecast",
+    "bar-widget"
+  ],
+  "kinds": [
+    "bar-widget"
+  ],
+  "entryPoints": {
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Tempest Weather",
+    "description": "Tempest weather pill with current conditions and 5-day forecast",
+    "category": "Info",
+    "allowMultiple": false,
+    "defaultSection": "center",
+    "defaults": {
+      "stationId": "",
+      "token": "",
+      "unit": "auto",
+      "refreshMinutes": 15
+    },
+    "schema": [
+      {
+        "key": "stationId",
+        "type": "string",
+        "label": "Tempest station ID (tempestwx.com → Settings → Stations)",
+        "defaultValue": ""
+      },
+      {
+        "key": "token",
+        "type": "string",
+        "label": "Personal API token (tempestwx.com → Settings → Data Authorizations)",
+        "defaultValue": ""
+      },
+      {
+        "key": "unit",
+        "type": "string",
+        "label": "Units — auto, imperial, or metric (auto follows your locale)",
+        "defaultValue": "auto"
+      },
+      {
+        "key": "refreshMinutes",
+        "type": "integer",
+        "label": "Refresh interval (minutes)",
+        "min": 1,
+        "max": 120,
+        "defaultValue": 15
+      }
+    ]
+  }
+}
