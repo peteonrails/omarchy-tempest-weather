@@ -74,7 +74,7 @@ If a token leaks, revoke it under Settings → Data Authorizations.
 There is also an IPC handler, so you can pop the forecast from a keybinding:
 
 ```bash
-omarchy-shell ipc call peteonrails.weather show
+omarchy-shell peteonrails.weather show
 ```
 
 It auto-closes after 5 seconds.
