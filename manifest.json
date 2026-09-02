@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "id": "peteonrails.weather",
   "name": "Tempest Weather",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "author": "Pete Jackson",
   "license": "MIT",
   "description": "WeatherFlow Tempest bar pill with a current-conditions hero and 5-day forecast popup. Reads a personal Tempest station via the better_forecast API. Requires your own station ID and API token.",

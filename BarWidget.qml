@@ -89,16 +89,24 @@ BarWidget {
 
   // The pill label is generated locally now rather than read from a shared
   // bar property. Icon + temperature, e.g. " 60°".
+  // Both are required and neither can be guessed, so an install is inert until
+  // the user supplies them.
+  readonly property bool configured: stationId !== "" && apiToken !== ""
+
   readonly property string label: {
-    if (!current) return ""
+    // Saying so beats vanishing. A widget that renders nothing is
+    // indistinguishable from one that is broken, or from one the user failed to
+    // add to the bar at all -- there is nothing to click and nothing to read.
+    if (!configured) return "Weather: not set up"
+    if (!current) return "Weather: …"
     var icon = iconForTempest(current.icon)
     var temp = reportTempNum ? (reportTempNum + "°") : ""
-    if (!icon && !temp) return ""
+    if (!icon && !temp) return "Weather: …"
     return icon + (icon && temp ? " " : "") + temp
   }
   readonly property string klass: current ? "active" : ""
 
-  visible: label !== ""
+  visible: true
   implicitWidth: button.implicitWidth + 8
   implicitHeight: button.implicitHeight
 
@@ -222,7 +230,9 @@ BarWidget {
     text: root.label
     active: root.klass === "active"
     horizontalMargin: 1
-    tooltipText: ""
+    tooltipText: root.configured
+      ? ""
+      : "Set stationId and token in this widget's settings — tempestwx.com → Settings → Data Authorizations"
 
     onPressed: function(b) {
       if (!root.bar) return
