@@ -2,10 +2,10 @@
   "schemaVersion": 1,
   "id": "peteonrails.weather",
   "name": "Tempest Weather",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "author": "Pete Jackson",
   "license": "MIT",
-  "description": "WeatherFlow Tempest bar pill with a current-conditions hero and 5-day forecast popup. Reads a personal Tempest station via the better_forecast API. Requires your own station ID and API token.",
+  "description": "Tempest weather pill with a current-conditions hero and five-day forecast. Reads your own Tempest station, or any location with no account at all; asks which on first run.",
   "homepage": "https://github.com/peteonrails/omarchy-tempest-weather",
   "repository": "https://github.com/peteonrails/omarchy-tempest-weather",
   "keywords": [
@@ -31,9 +31,22 @@
       "stationId": "",
       "token": "",
       "unit": "auto",
-      "refreshMinutes": 15
+      "refreshMinutes": 15,
+      "source": "ask"
     },
     "schema": [
+      {
+        "key": "source",
+        "type": "enum",
+        "label": "Where readings come from",
+        "options": [
+          "ask",
+          "tempest",
+          "location"
+        ],
+        "defaultValue": "ask",
+        "description": "tempest uses your station and token. location uses public forecast data for Omarchy's configured weather location and needs no account. ask raises the setup view in the widget's popup."
+      },
       {
         "key": "stationId",
         "type": "string",
