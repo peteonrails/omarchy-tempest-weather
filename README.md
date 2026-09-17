@@ -19,6 +19,32 @@ The widget renders **nothing** until both `stationId` and `token` are set. That
 is deliberate: a fresh install should not fire network requests with empty
 credentials.
 
+## Where the weather comes from
+
+Two sources, and the widget asks which on first run — the popup opens as a
+setup view rather than the pill sitting there empty:
+
+**Your Tempest station.** The good case: it is the weather in your own garden,
+not the airport's. Needs a station ID and an API token.
+
+**Any location.** Public forecast data from
+[Open-Meteo](https://open-meteo.com), no account and no hardware. Type a city,
+pick it from the geocoded list, done.
+
+The location is read from and written to
+`~/.local/state/omarchy/settings/weather.json` through
+`omarchy-weather-location` — the same file Omarchy's built-in weather widget
+uses. So a location set here is set for the desktop, and one already configured
+there needs no second answer; the setup view offers it as a single click.
+
+Open-Meteo's response is normalized into the Tempest `better_forecast` shape,
+so the hero, the stats and the five-day strip render either source identically.
+WMO weather codes are grouped exactly as Omarchy's own weather model groups
+them, so the two widgets never disagree about what the sky is doing.
+
+Once a source works, the popup footer names it and offers **change source** to
+reopen the setup view. Nothing needs editing by hand.
+
 ## Settings
 
 Configure via the shell settings UI, or by hand on the widget's entry in
@@ -26,6 +52,7 @@ Configure via the shell settings UI, or by hand on the widget's entry in
 
 | Key | Type | Default | Meaning |
 |---|---|---|---|
+| `source` | enum | `"ask"` | `tempest`, `location`, or `ask` to raise the setup view. An install that already has a station and token is treated as `tempest` without being asked |
 | `stationId` | string | `""` | Your station ID — tempestwx.com → Settings → Stations |
 | `token` | string | `""` | Personal API token — tempestwx.com → Settings → Data Authorizations |
 | `unit` | string | `"auto"` | `auto`, `imperial`, or `metric`. `auto` follows your locale |
@@ -66,8 +93,8 @@ If a token leaks, revoke it under Settings → Data Authorizations.
 
 | Action | Result |
 |---|---|
-| Hover | Opens the forecast popup |
-| Left click | Opens your station page on tempestwx.com |
+| Hover | Opens the forecast popup (suspended while the setup view is up, so a form is never dismissed by the pointer reaching for the keyboard) |
+| Left click | Opens your station page on tempestwx.com, or the forecast for your location — and raises the setup view when neither is configured |
 | Middle click | Forces an immediate refresh |
 | Right click | Sends a desktop notification summarising current conditions |
 

@@ -12,10 +12,15 @@ BarWidget {
   property bool buttonHovered: false
   function closePopout() { popupOpen = false }
 
+  // Hover rules are suspended while the setup form is up. A form has to survive
+  // the pointer leaving it -- that is what happens when you reach for the
+  // keyboard -- so setup closes only on the user's word: Escape, a saved
+  // choice, the footer, or an outside click caught by the popup's focus grab.
   Timer {
     id: closeDelay
     interval: 220
     onTriggered: {
+      if (root.showSetup) return
       if (!root.buttonHovered && (!popup || !popup.containsMouse)) {
         root.popupOpen = false
       }
@@ -23,6 +28,9 @@ BarWidget {
   }
 
   function evaluateHover() {
+    // Hovering must not raise the form either: an unconfigured pill answers to
+    // a deliberate click, not to a pointer passing over it.
+    if (root.showSetup) return
     if (root.buttonHovered || (popup && popup.containsMouse)) {
       closeDelay.stop()
       root.popupOpen = true
@@ -44,7 +52,7 @@ BarWidget {
   Timer {
     id: autoCloseTimer
     interval: 5000
-    onTriggered: root.popupOpen = false
+    onTriggered: if (!root.showSetup) root.popupOpen = false
   }
 
   // Station / token come from per-widget settings (shell.json layout entry).
@@ -841,6 +849,39 @@ BarWidget {
           }
         }
       }
+
+      // ---- Footer: names the source in force, and is the way back into setup
+      //      once one works -- otherwise changing your mind would mean editing
+      //      shell.json by hand, which is what this whole view exists to avoid.
+      Item {
+        width: parent.width
+        height: 14
+
+        Text {
+          anchors.left: parent.left
+          anchors.leftMargin: 16
+          text: root.source === "tempest"
+            ? ("Tempest station " + root.stationId)
+            : (root.locationName !== "" ? root.locationName : "Public forecast")
+          color: root.bar ? Qt.darker(root.bar.foreground, 1.6) : "gray"
+          font.family: root.bar ? root.bar.fontFamily : "monospace"
+          font.pixelSize: 10
+        }
+
+        Text {
+          id: changeSource
+          anchors.right: parent.right
+          anchors.rightMargin: 20
+          text: "change source"
+          color: root.bar ? Qt.darker(root.bar.foreground, changeHover.hovered ? 1.0 : 1.6) : "gray"
+          font.family: root.bar ? root.bar.fontFamily : "monospace"
+          font.pixelSize: 10
+          font.underline: changeHover.hovered
+
+          HoverHandler { id: changeHover }
+          TapHandler { onTapped: root.setupOpen = true }
+        }
+      }
     }
 
     // ---- Setup view. Raised while no source works, and reachable afterwards
@@ -905,6 +946,7 @@ BarWidget {
             font.family: root.bar ? root.bar.fontFamily : "monospace"
             text: root.stationId
             Keys.onReturnPressed: root.saveTempest(stationField.text, tokenField.text)
+            Keys.onEscapePressed: if (root.ready) root.setupOpen = false
           }
 
           TextField {
@@ -916,6 +958,7 @@ BarWidget {
             font.family: root.bar ? root.bar.fontFamily : "monospace"
             text: root.apiToken
             Keys.onReturnPressed: root.saveTempest(stationField.text, tokenField.text)
+            Keys.onEscapePressed: if (root.ready) root.setupOpen = false
           }
 
           Rectangle {
